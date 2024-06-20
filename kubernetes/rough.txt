@@ -1,0 +1,15 @@
+name: ALBIngressControllerIAMPolicy
+
+url: https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/master/docs/examples/iam-policy.json
+
+
+aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+
+eksctl create iamserviceaccount --cluster=demo-cluster --namespace=kube-system --name=aws-load-balancer-controller --role-name AmazonEKSLoadBalancerControllerRole --attach-policy-arn=arn:aws:iam::767397983464:policy/AWSLoadBalancerControllerIAMPolicy --approve
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=demo-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller --set region=ap-south-1 --set vpcId=vpc-0d50cd680d97d45e8
+
+kubectl set image deployment/s1-deployment web-server-1=ayanabha1/web-server-1:latest
+
+
+eksctl create fargateprofile --cluster yaara --region ap-south-1 --name yaara-fp --namespace dev
